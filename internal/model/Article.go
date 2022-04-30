@@ -1,5 +1,7 @@
 package model
 
+import "github.com/lstink/blog/pkg/app"
+
 type Article struct {
 	*Model
 	Title         string `json:"title"`
@@ -11,4 +13,9 @@ type Article struct {
 
 func (a Article) TableName() string {
 	return "blog_article"
+}
+
+type ArticleSwagger struct {
+	List  []*Article
+	Paper *app.Pager
 }

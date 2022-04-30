@@ -13,6 +13,10 @@ import (
 	"time"
 )
 
+// @title 博客系统
+// @version 1.0.0
+// @description Go 语言编程之旅，一起做GO项目
+// @termsOfService https://github.com/lstink/go
 func main() {
 	// 设置运行模式
 	gin.SetMode(global.ServerSetting.RunMode)
