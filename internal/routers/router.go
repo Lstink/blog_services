@@ -3,7 +3,8 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	v1 "github.com/lstink/blog/internal/routers/api/v1"
-	"net/http"
+	"github.com/lstink/blog/pkg/app"
+	"github.com/lstink/blog/pkg/errcode"
 )
 
 func NewRouter() *gin.Engine {
@@ -12,7 +13,8 @@ func NewRouter() *gin.Engine {
 	tag := v1.NewTag()
 
 	r.GET("/", func(ctx *gin.Context) {
-		ctx.String(http.StatusOK, "this is a go project!")
+		app.NewResponse(ctx).ToErrorResponse(errcode.ServerError)
+		return
 	})
 
 	apiv1 := r.Group("api/v1")
