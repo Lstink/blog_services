@@ -1,21 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/lstink/blog/global"
 	"github.com/lstink/blog/internal/model"
 	"github.com/lstink/blog/internal/routers"
+	"github.com/lstink/blog/pkg/logger"
 	"github.com/lstink/blog/pkg/setting"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"log"
 	"net/http"
 	"time"
 )
 
 func main() {
-	fmt.Println(global.ServerSetting)
-	fmt.Println(global.AppSetting)
-	fmt.Println(global.DatabaseSetting)
 	// 设置运行模式
 	gin.SetMode(global.ServerSetting.RunMode)
 
@@ -44,6 +42,10 @@ func init() {
 	err = setupDBEngine()
 	if err != nil {
 		log.Fatalf("init.setupDBEngine err: %v", err)
+	}
+	err = setupLogger()
+	if err != nil {
+		log.Fatalf("init.setupLogger err: %v", err)
 	}
 }
 
@@ -79,5 +81,17 @@ func setupDBEngine() error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func setupLogger() error {
+	filename := global.AppSetting.LogSavePath + "/" + global.AppSetting.LogFileName + global.AppSetting.LogFileExt
+	global.Logger = logger.NewLogger(&lumberjack.Logger{
+		Filename:  filename,
+		MaxSize:   600,
+		MaxAge:    10,
+		LocalTime: true,
+	}, "", log.LstdFlags).WithCaller(2)
+
 	return nil
 }
