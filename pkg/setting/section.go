@@ -35,6 +35,7 @@ type DatabaseSettings struct {
 
 // ReadSection 读取配置
 func (s *Setting) ReadSection(k string, v any) (err error) {
+	// 根据k解析读取到的配置，并赋值给指定的指针 v
 	err = s.vp.UnmarshalKey(k, v)
 	if err != nil {
 		return err

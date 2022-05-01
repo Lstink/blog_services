@@ -19,13 +19,16 @@ type Model struct {
 	IsDel      uint8  `json:"is_del"`
 }
 
+// NewDBEngine 实例化数据库实例--传入数据库的配置信息
 func NewDBEngine(databaseSetting *setting.DatabaseSettings) (*gorm.DB, error) {
+	// 格式化连接数据库的字符串信息
 	s := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=%s&parseTime=%t&loc=Local", databaseSetting.Username,
 		databaseSetting.Password,
 		databaseSetting.Host,
 		databaseSetting.DBName,
 		databaseSetting.Charset,
 		databaseSetting.ParseTime)
+	// gorm打开数据库连接并设置数据类型为 mysql
 	db, err := gorm.Open(databaseSetting.DBType, s)
 	if err != nil {
 		return nil, err
@@ -34,19 +37,21 @@ func NewDBEngine(databaseSetting *setting.DatabaseSettings) (*gorm.DB, error) {
 	if global.ServerSetting.RunMode == "debug" {
 		db.LogMode(true)
 	}
+	// 设置数据库表格式为单数形式
 	db.SingularTable(true)
 	// 注册回调行为
-	db.SingularTable(true)
 	db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
 	db.Callback().Update().Replace("gorm:update_time_stamp", updateTimeStampForUpdateCallback)
 	db.Callback().Delete().Replace("gorm:delete", deleteCallback)
-
+	// 设置数据库最大连接数量
 	db.DB().SetMaxIdleConns(databaseSetting.MaxIdleConns)
+	// 设置数据库最大打开的连接数量
 	db.DB().SetMaxOpenConns(databaseSetting.MaxOpenConns)
 
 	return db, nil
 }
 
+// updateTimeStampForCreateCallback 创建数据的时候，更新时间戳的回调
 func updateTimeStampForCreateCallback(scope *gorm.Scope) {
 	if !scope.HasError() {
 		nowTIme := time.Now().Unix()

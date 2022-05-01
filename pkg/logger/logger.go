@@ -49,8 +49,11 @@ type Logger struct {
 	callers   []string
 }
 
+// NewLogger 实例化日志
 func NewLogger(w io.Writer, prefix string, flag int) *Logger {
+	// 实例化日志
 	i := log.New(w, prefix, flag)
+	// 返回自定义日志结构体
 	return &Logger{newLogger: i}
 }
 
@@ -75,6 +78,8 @@ func (l *Logger) WithContext(ctx context.Context) *Logger {
 	ll.ctx = ctx
 	return ll
 }
+
+// WithCaller 堆栈信息
 func (l *Logger) WithCaller(skip int) *Logger {
 	ll := l.clone()
 	pc, file, line, ok := runtime.Caller(skip)
@@ -108,10 +113,15 @@ func (l *Logger) WithCallerFrames() *Logger {
 }
 
 func (l *Logger) JOSNFormat(message string) map[string]interface{} {
+	// 实例化map，长度为字段长度+4
 	data := make(Fields, len(l.fields)+4)
+	// 实例化map的 time 字段赋值为纳秒的时间戳
 	data["time"] = time.Now().Local().UnixNano()
+	// 实例化map的 message 字段赋值为传过来的字符串
 	data["message"] = message
+	// 实例化map的 callers 赋值
 	data["callers"] = l.callers
+	// 如果这个字段存在值，则遍历这个字符串切片，把值复制到当前实例化的map中
 	if len(l.fields) > 0 {
 		for k, v := range l.fields {
 			if _, ok := data[k]; !ok {
@@ -119,13 +129,17 @@ func (l *Logger) JOSNFormat(message string) map[string]interface{} {
 			}
 		}
 	}
-
+	// 最后返回这个map的内容
 	return data
 }
 
+// Output 输出日志内容 接收 日志等级 和 内容
 func (l *Logger) Output(level Level, message string) {
+	// 将map转化为 json 格式的字符串
 	body, _ := json.Marshal(l.JOSNFormat(message))
+	// 格式化日志字符串内容为想要的自定义格式
 	content := fmt.Sprintf("[%s] %s", level, string(body))
+	// 判断日志等级-写入日志
 	switch level {
 	case LevelInfo:
 		l.newLogger.Print(content)
@@ -142,19 +156,32 @@ func (l *Logger) Output(level Level, message string) {
 	}
 }
 
+// Info info等级的日志
 func (l *Logger) Info(v ...any) {
 	l.Output(LevelInfo, fmt.Sprint(v...))
 }
 
+// Infof info等级的日志，接收格式化参数
 func (l *Logger) Infof(format string, v ...any) {
 	l.Output(LevelInfo, fmt.Sprintf(format, v...))
 }
+
+// Fatal fatal等级的日志
 func (l *Logger) Fatal(v ...any) {
 	l.Output(LevelFatal, fmt.Sprint(v...))
 }
+
+// Fatalf fatal等级的日志，接收格式化参数
 func (l *Logger) Fatalf(format string, v ...any) {
 	l.Output(LevelFatal, fmt.Sprintf(format, v...))
 }
+
+// Errorf error等级的日志，接收格式化参数
 func (l *Logger) Errorf(format string, v ...any) {
 	l.Output(LevelError, fmt.Sprintf(format, v...))
+}
+
+// Error error等级的日志
+func (l *Logger) Error(v ...any) {
+	l.Output(LevelError, fmt.Sprint(v...))
 }

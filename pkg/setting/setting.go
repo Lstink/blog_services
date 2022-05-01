@@ -2,6 +2,7 @@ package setting
 
 import "github.com/spf13/viper"
 
+// Setting 声明全局配置的结构体
 type Setting struct {
 	vp *viper.Viper
 }
@@ -21,6 +22,6 @@ func NewSetting() (*Setting, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	// 返回配置实例
 	return &Setting{vp}, nil
 }

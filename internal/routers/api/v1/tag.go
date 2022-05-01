@@ -100,11 +100,15 @@ func (t Tag) Create(c *gin.Context) {
 // @Failure 500 {object} errcode.Error "内部错误"
 // @router /api/v1/tags/{id} [put]
 func (t Tag) Update(c *gin.Context) {
-	// 验证
+	// 声明一个变量
 	param := service.UpdateTagRequest{}
+	// 初始化一个响应
 	response := app.NewResponse(c)
+	// 绑定数据并且验证数据
 	valid, errs := app.BindAndValid(c, param)
+	// 如果验证不通过
 	if !valid {
+		// 记录日志--error 等级的日志
 		global.Logger.Errorf("app.bindTagUpdate err: %v", errs)
 		response.ToErrorResponse(errcode.ErrorUpdateTagFail)
 		return

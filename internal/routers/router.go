@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/lstink/blog/docs"
 	"github.com/lstink/blog/internal/middleware"
-	v1 "github.com/lstink/blog/internal/routers/api/v1"
+	"github.com/lstink/blog/internal/routers/api/v1"
 	"github.com/lstink/blog/pkg/app"
 	"github.com/lstink/blog/pkg/errcode"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -12,12 +12,15 @@ import (
 )
 
 func NewRouter() *gin.Engine {
+	// 获取 gin 提供的默认路由方式
 	r := gin.Default()
-	// 加载中间件
+	// 加载自定义中间件--翻译
 	r.Use(middleware.Translations())
 	// 注册swagger API接口文档
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// 实例化文章结构体
 	article := v1.NewArticle()
+	// 实例化标签结构体
 	tag := v1.NewTag()
 
 	r.GET("/", func(ctx *gin.Context) {
