@@ -107,9 +107,8 @@ func (l *Logger) WithCallerFrames() *Logger {
 	return ll
 }
 
-func (l *Logger) JOSNFormat(level Level, message string) map[string]interface{} {
+func (l *Logger) JOSNFormat(message string) map[string]interface{} {
 	data := make(Fields, len(l.fields)+4)
-	data["level"] = level.String()
 	data["time"] = time.Now().Local().UnixNano()
 	data["message"] = message
 	data["callers"] = l.callers
@@ -125,8 +124,8 @@ func (l *Logger) JOSNFormat(level Level, message string) map[string]interface{} 
 }
 
 func (l *Logger) Output(level Level, message string) {
-	body, _ := json.Marshal(l.JOSNFormat(level, message))
-	content := string(body)
+	body, _ := json.Marshal(l.JOSNFormat(message))
+	content := fmt.Sprintf("[%s] %s", level, string(body))
 	switch level {
 	case LevelInfo:
 		l.newLogger.Print(content)
