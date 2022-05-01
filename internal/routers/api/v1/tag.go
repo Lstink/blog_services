@@ -2,6 +2,9 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/lstink/blog/global"
+	"github.com/lstink/blog/pkg/app"
+	"github.com/lstink/blog/pkg/errcode"
 )
 
 type Tag struct {
@@ -26,7 +29,21 @@ func (t Tag) Get(c *gin.Context) {
 // @Failure 500 {object} errcode.Error "内部错误"
 // @router /api/v1/tags [get]
 func (t Tag) List(c *gin.Context) {
+	param := struct {
+		Name  string `form:"name" binding:"max=100"`
+		State uint8  `form:"state,default=1" binding:"oneof=0 1"`
+	}{}
+	response := app.NewResponse(c)
+	valid, errs := app.BindAndValid(c, &param)
+	if !valid {
+		global.Logger.Errorf("app.BindAndValid errs: %v", errs)
+		errRsp := errcode.InvalidParams.WithDetails(errs.Errors()...)
+		response.ToErrorResponse(errRsp)
+		return
+	}
 
+	response.ToResponse(gin.H{})
+	return
 }
 
 // @Summary 新增标签

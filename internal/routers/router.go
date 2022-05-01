@@ -3,6 +3,7 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/lstink/blog/docs"
+	"github.com/lstink/blog/internal/middleware"
 	v1 "github.com/lstink/blog/internal/routers/api/v1"
 	"github.com/lstink/blog/pkg/app"
 	"github.com/lstink/blog/pkg/errcode"
@@ -12,6 +13,9 @@ import (
 
 func NewRouter() *gin.Engine {
 	r := gin.Default()
+	// 加载中间件
+	r.Use(middleware.Translations())
+	// 注册swagger API接口文档
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	article := v1.NewArticle()
 	tag := v1.NewTag()

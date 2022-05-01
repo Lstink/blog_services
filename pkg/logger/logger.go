@@ -156,3 +156,6 @@ func (l *Logger) Fatal(v ...any) {
 func (l *Logger) Fatalf(format string, v ...any) {
 	l.Output(LevelFatal, fmt.Sprintf(format, v...))
 }
+func (l *Logger) Errorf(format string, v ...any) {
+	l.Output(LevelError, fmt.Sprintf(format, v...))
+}
