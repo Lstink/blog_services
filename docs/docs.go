@@ -282,6 +282,9 @@ const docTemplate = `{
                 "is_del": {
                     "type": "string"
                 },
+                "modified_by": {
+                    "type": "string"
+                },
                 "modified_on": {
                     "type": "string"
                 },
