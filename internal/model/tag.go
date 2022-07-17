@@ -59,9 +59,13 @@ func (t Tag) Create(db *gorm.DB) error {
 }
 
 // Update 更新数据
-func (t Tag) Update(db *gorm.DB) error {
-	db = db.Model(&Tag{}).Where("id = ? AND is_del = ?", t.ID, 0)
-	return db.Update(t).Error
+func (t Tag) Update(db *gorm.DB, values any) error {
+	err := db.Model(&Tag{}).Where("id = ? AND is_del = ?", t.ID).Updates(values).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Delete 删除数据

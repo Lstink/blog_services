@@ -27,13 +27,23 @@ func (d *Dao) CreateTag(name string, state uint8, createdBy string) error {
 }
 
 func (d *Dao) UpdateTag(id uint32, name string, state uint8, modifiedBy string) error {
+	// 实例化一个标签，并指明id
 	tag := model.Tag{
-		Name:  name,
-		State: state,
-		Model: &model.Model{ID: id, ModifiedBy: modifiedBy},
+		Model: &model.Model{
+			ID: id,
+		},
 	}
-
-	return tag.Update(d.engine)
+	// 声明一个map
+	values := map[string]interface{}{
+		"state":       state,
+		"modified_by": modifiedBy,
+	}
+	// 如果姓名不为空，则赋值到map上
+	if name != "" {
+		values["name"] = name
+	}
+	// 执行更新，传递参数，并将结果返回
+	return tag.Update(d.engine, values)
 }
 
 func (d *Dao) DeleteTag(id uint32) error {
